@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # import roslib
-# roslib.load_manifest('ros_kagotos')
+# roslib.load_manifest('kagotos')
 import rospy
 from sensor_msgs.msg import LaserScan
 

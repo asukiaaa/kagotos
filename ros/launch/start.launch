@@ -1,4 +1,4 @@
 <launch>
   <include file="$(find ydlidar)/launch/lidar.launch" />
-  <node name="ros_kagotos_listener" pkg="ros_kagotos" type="sample_listener.py" />
+  <node name="kagotos_listener" pkg="kagotos" type="sample_listener.py" />
 </launch>

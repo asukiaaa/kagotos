@@ -1,4 +1,4 @@
-# ros_kagotos
+# kagotos
 A project to run a robot named kagotos.
 
 # Requirements
@@ -11,7 +11,7 @@ A project to run a robot named kagotos.
 
 ```
 cd ~/ros_catkin_ws/src
-git clone https://github.com/asukiaaa/ros_kagotos.git
+git clone https://github.com/asukiaaa/kagotos.git
 cd ../
 catkin_make
 ```
@@ -21,14 +21,14 @@ catkin_make
 ```
 cd ~/ros_catkin_ws
 source devel/setup.sh
-roslaunch ros_kagotos start.launch
+roslaunch kagotos start.launch
 ```
 
 # Executed Commands to create this project
 
 ```
 cd ~/ros_catkin_ws/src
-catkin_create_pkg ros_kagotos tf roscpp rospy ydlidar
+catkin_create_pkg kagotos tf roscpp rospy ydlidar
 ```
 
 # License
