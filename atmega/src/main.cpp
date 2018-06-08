@@ -108,10 +108,10 @@ void loop() {
   if (Serial.available() > 0) {
     while (Serial.available() > 0) {
       char c = Serial.read();
-      if (c == ';') {
+      if (c == ';' || c == '\n') {
         executeCommand(command);
         command = "";
-      } else if (c == '\n' || c == '\r' || c == '\t' || c == ' ') {
+      } else if (c == '\r' || c == '\t' || c == ' ') {
         // replace change line or tab as a white space
         if (command.length() > 0 && !command.endsWith(" ")) {
           command += ' ';
