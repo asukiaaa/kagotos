@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   tf
+  urdf
+  ydlidar
 )
 
 ## System dependencies are found with CMake's conventions

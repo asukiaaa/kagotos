@@ -28,7 +28,7 @@ roslaunch kagotos start.launch
 
 ```
 cd ~/ros_catkin_ws/src
-catkin_create_pkg kagotos tf roscpp rospy ydlidar
+catkin_create_pkg kagotos roscpp rospy tf urdf ydlidar
 ```
 
 # License
