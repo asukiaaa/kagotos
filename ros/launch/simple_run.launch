@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find ydlidar)/launch/lidar.launch" />
+  <node name="kagotos_simple_run" pkg="kagotos" type="simple_run.py" />
+</launch>
