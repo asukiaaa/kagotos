@@ -25,8 +25,9 @@ def laser_scan_callback(data):
         # print range
         if range != 0.0 and range < min_range:
             min_range = range
-    print min_range
-    if min_range < 1:
+    if min_range < 0.4:
+        set_motor_speed(100, -100)
+    elif min_range < 0.6:
         set_motor_speed(100, 0)
     else:
         set_motor_speed(100, 100)
