@@ -20,7 +20,7 @@ def twist_callback(data):
         set_motor_speed(speed, speed)
     else:
         print "turn"
-        speed = 100 * y
+        speed = 50 * y
         set_motor_speed(speed, -speed)
 
 if __name__ == '__main__':
