@@ -2,8 +2,9 @@
 A project to run a robot named kagotos.
 
 # Requirements
-- ROS melodic
+- ROS ([melodic](http://wiki.ros.org/melodic))
 - [ydlidar](https://github.com/EAIBOT/ydlidar)
+- [rosserial](https://github.com/ros-drivers/rosserial)
 
 # Usage
 

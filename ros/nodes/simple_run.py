@@ -1,17 +1,27 @@
 #!/usr/bin/env python
-import serial
 import rospy
 from sensor_msgs.msg import LaserScan
+from geometry_msgs.msg import Twist
 
-ser = serial.Serial('/dev/ttyACM0')
 current_data = None
+pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
 
 def update_direction():
     return
 
 def set_motor_speed(left, right):
-    ser.write("motors {} {};".format(left, right))
-    ser.flush()
+    twist = Twist()
+    if (left > 0.0 and right > 0.0):
+        twist.linear.x = 1.0
+    elif (left < 0.0 and right > 0.0):
+        twist.linear.x = 1.0
+        twist.angular.z = 1.0
+    elif (left > 0.0 and right < 0.0):
+        twist.linear.x = 1.0
+        twist.angular.z = -1.0
+    elif (left < 0.0 and right < 0.0):
+        twist.linear.x = -1.0
+    pub.publish(twist)
 
 def laser_scan_callback(data):
     global current_data

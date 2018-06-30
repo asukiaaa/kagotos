@@ -1,4 +1,10 @@
+// define USE_USBCON before including ros.h to use atmega32u4
+#define USE_USBCON
+
 #include <Arduino.h>
+#include <ros.h>
+#include <geometry_msgs/Twist.h>
+
 #define DETECT_LOST_CONNECTION_MS 3000
 #define MOTOR_L_B 4
 #define MOTOR_L_F 5
@@ -7,6 +13,9 @@
 #define MOTOR_R_F 8
 #define MOTOR_R_PWM 9
 #define MOTOR_STBY 10
+#define MOTOR_MAX_VALUE 1023
+
+float motor_value_rate = 0.1;
 
 unsigned long lastCommunicatedAt = 0;
 unsigned long detectLostAt = 0;
@@ -16,38 +25,6 @@ String currentMotorR = "";
 void updateLastCommunicatedAt() {
   lastCommunicatedAt = millis();
   detectLostAt = lastCommunicatedAt + (unsigned long) DETECT_LOST_CONNECTION_MS;
-}
-
-void setup() {
-  Serial.begin(115200);
-  pinMode(MOTOR_L_B, OUTPUT);
-  pinMode(MOTOR_L_F, OUTPUT);
-  pinMode(MOTOR_L_PWM, OUTPUT);
-  pinMode(MOTOR_R_B, OUTPUT);
-  pinMode(MOTOR_R_F, OUTPUT);
-  pinMode(MOTOR_R_PWM, OUTPUT);
-  pinMode(MOTOR_STBY, OUTPUT);
-}
-
-String splittedValue(String value, int index) {
-  char splitChar = ' ';
-  int spaceIndex;
-
-  // Skip values before index
-  for (int i = 0; i < index; ++i) {
-    spaceIndex = value.indexOf(splitChar);
-    if (spaceIndex == -1) {
-      return "";
-    }
-    value = value.substring(spaceIndex + 1);
-  }
-
-  // Get target index value
-  spaceIndex = value.indexOf(splitChar);
-  if (spaceIndex == -1) {
-    return value;
-  }
-  return value.substring(0, spaceIndex);
 }
 
 void setMotorSpeed(String value, int b_pin, int f_pin, int pwm_pin) {
@@ -82,55 +59,62 @@ void sleepMotors() {
   digitalWrite(MOTOR_STBY, LOW);
 }
 
-void executeCommand(String command) {
-  if (command.startsWith("motors ")) {
-    String left = splittedValue(command, 1);
-    String right = splittedValue(command, 2);
-    if (left.length() > 0 && right.length() > 0) {
-      currentMotorL = left;
-      currentMotorR = right;
-      setMotorsSpeed(left, right);
-      updateLastCommunicatedAt();
+void messageCb(const geometry_msgs::Twist& twist) {
+  updateLastCommunicatedAt();
+  const float linear_x = twist.linear.x;
+  const float angle_z = twist.angular.z;
+  float speed = linear_x * MOTOR_MAX_VALUE * motor_value_rate;
+  String speedStr = String(speed);
+  String revertedSpeedStr = String(-speed);
+  String newMotorL, newMotorR;
+  if (linear_x != 0.0 && angle_z == 0.0) {
+    newMotorL = speedStr;
+    newMotorR = speedStr;
+  } else if (angle_z > 0.0) {
+    // Turn left
+    newMotorL = revertedSpeedStr;
+    newMotorR = speedStr;
+  } else if (angle_z < 0.0) {
+    // Turn right
+    newMotorL = speedStr;
+    newMotorR = revertedSpeedStr;
+  } else {
+    newMotorL = '0';
+    newMotorR = '0';
+  }
+  if (currentMotorL != newMotorL && currentMotorR != newMotorR) {
+    if (newMotorL == '0' && newMotorR == '0') {
+      sleepMotors();
+    } else {
+      setMotorsSpeed(newMotorL, newMotorR);
     }
-  } else if (command == "sleep") {
-    sleepMotors();
-    updateLastCommunicatedAt();
-  } else if (command == "status") {
-    Serial.println("Show status");
-    Serial.println("L: " + currentMotorL);
-    Serial.println("R: " + currentMotorR);
-    updateLastCommunicatedAt();
+    currentMotorL = newMotorL;
+    currentMotorR = newMotorR;
   }
 }
 
+ros::NodeHandle nh;
+ros::Subscriber<geometry_msgs::Twist> sub("cmd_vel", &messageCb);
+
+void setup() {
+  pinMode(MOTOR_L_B, OUTPUT);
+  pinMode(MOTOR_L_F, OUTPUT);
+  pinMode(MOTOR_L_PWM, OUTPUT);
+  pinMode(MOTOR_R_B, OUTPUT);
+  pinMode(MOTOR_R_F, OUTPUT);
+  pinMode(MOTOR_R_PWM, OUTPUT);
+  pinMode(MOTOR_STBY, OUTPUT);
+  nh.getHardware()->setBaud(115200);
+  nh.initNode();
+  nh.subscribe(sub);
+}
+
 void loop() {
-  static String command = "";
-  if (Serial.available() > 0) {
-    while (Serial.available() > 0) {
-      char c = Serial.read();
-      if (c == ';' || c == '\n') {
-        executeCommand(command);
-        command = "";
-      } else if (c == '\r' || c == '\t' || c == ' ') {
-        // replace change line or tab as a white space
-        if (command.length() > 0 && !command.endsWith(" ")) {
-          command += ' ';
-        }
-      } else {
-        command += c;
-      }
-    }
-  } else {
-    delay(10);
-  }
-  if (detectLostAt < millis()) {
+  nh.spinOnce();
+  if (detectLostAt < millis() && currentMotorL != "" && currentMotorR != "") {
     currentMotorL = "";
     currentMotorR = "";
     sleepMotors();
   }
-  // Serial.println("command: " + command);
-  // for (int i = 0; i < 5; ++i) {
-  //   Serial.println(command.indexOf(' '));
-  //   Serial.println(String(i) + " [" + splittedValue(command, i) + "]");
-  // }
+  delay(1);
 }

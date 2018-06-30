@@ -22,43 +22,36 @@ pio run -t upload
 ```
 
 ## Test
-Start communication.
+
+Start subscriber.
 ```
-pio board monitor -b 115200
+roscore
 ```
 
-Full speed.
 ```
-motors 1023 1023
-```
-
-Stop.
-```
-motors 0 0
+rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
 ```
 
-Back with middle speed.
+Send geometry_msg::Twist.
+
+Forward.
 ```
-motors -500 -500
+rostopic pub /cmd_vel geometry_msgs/Twist  '{linear:  {x: 1.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}'
+```
+
+Back.
+```
+rostopic pub /cmd_vel geometry_msgs/Twist  '{linear:  {x: -1.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}'
+```
+
+Turn left.
+```
+rostopic pub /cmd_vel geometry_msgs/Twist  '{linear:  {x: -1.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.0}}'
 ```
 
 Turn right.
 ```
-motors 100 -100
-```
-
-Brake.
-```
-motors brake brake
-```
-or
-```
-motors b b
-```
-
-See status
-```
-status
+rostopic pub /cmd_vel geometry_msgs/Twist  '{linear:  {x: -1.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.0}}'
 ```
 
 # Setup memo
@@ -72,3 +65,7 @@ pio init --board sparkfun_promicro16
 
 # License
 MIT
+
+# References
+- [rosserial_arduino Hello World](http://wiki.ros.org/rosserial_arduino/Tutorials/Hello%20World)
+- [rosserial_arduino Blink](http://wiki.ros.org/rosserial_arduino/Tutorials/Blink)

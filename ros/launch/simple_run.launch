@@ -1,4 +1,8 @@
 <launch>
   <include file="$(find ydlidar)/launch/lidar.launch" />
+  <node name="kagotos_serial" pkg="rosserial_python" type="serial_node.py">
+    <param name="port" value="/dev/ttyACM0" />
+    <param name="baud" value="115200" />
+  </node>
   <node name="kagotos_simple_run" pkg="kagotos" type="simple_run.py" />
 </launch>
