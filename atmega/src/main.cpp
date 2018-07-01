@@ -79,18 +79,19 @@ void messageCb(const geometry_msgs::Twist& twist) {
     newMotorL = speedStr;
     newMotorR = revertedSpeedStr;
   } else {
-    newMotorL = '0';
-    newMotorR = '0';
+    newMotorL = "0";
+    newMotorR = "0";
   }
-  if (currentMotorL != newMotorL && currentMotorR != newMotorR) {
-    if (newMotorL == '0' && newMotorR == '0') {
-      sleepMotors();
-    } else {
-      setMotorsSpeed(newMotorL, newMotorR);
-    }
-    currentMotorL = newMotorL;
-    currentMotorR = newMotorR;
+  if (currentMotorL == newMotorL && currentMotorR == newMotorR) {
+    return;
   }
+  if ((newMotorL == "0" && newMotorR == "0") || (newMotorL == "0.0" && newMotorR == "0.0")) {
+    sleepMotors();
+  } else {
+    setMotorsSpeed(newMotorL, newMotorR);
+  }
+  currentMotorL = newMotorL;
+  currentMotorR = newMotorR;
 }
 
 ros::NodeHandle nh;
