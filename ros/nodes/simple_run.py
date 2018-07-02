@@ -3,11 +3,7 @@ import rospy
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 
-current_data = None
 pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
-
-def update_direction():
-    return
 
 def set_motor_speed(left, right):
     twist = Twist()
@@ -24,12 +20,10 @@ def set_motor_speed(left, right):
     pub.publish(twist)
 
 def laser_scan_callback(data):
-    global current_data
     print "get laser info"
     # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
     # print data.ranges
     print len(data.ranges)
-    current_data = data
     min_range = 10
     for range in data.ranges[270:450]:
         # print range
