@@ -66,21 +66,23 @@ void messageCb(const geometry_msgs::Twist& twist) {
   float speed = linear_x * MOTOR_MAX_VALUE * motor_value_rate;
   String speedStr = String(speed);
   String revertedSpeedStr = String(-speed);
-  String newMotorL, newMotorR;
+  String newMotorL = "0";
+  String newMotorR = "0";
   if (linear_x != 0.0 && angle_z == 0.0) {
     newMotorL = speedStr;
     newMotorR = speedStr;
   } else if (angle_z > 0.0) {
     // Turn left
-    newMotorL = revertedSpeedStr;
+    if (linear_x == 0) {
+      newMotorL = revertedSpeedStr;
+    }
     newMotorR = speedStr;
   } else if (angle_z < 0.0) {
     // Turn right
     newMotorL = speedStr;
-    newMotorR = revertedSpeedStr;
-  } else {
-    newMotorL = "0";
-    newMotorR = "0";
+    if (linear_x == 0) {
+      newMotorR = revertedSpeedStr;
+    }
   }
   if (currentMotorL == newMotorL && currentMotorR == newMotorR) {
     return;
