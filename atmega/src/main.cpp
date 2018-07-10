@@ -71,13 +71,13 @@ void messageCb(const geometry_msgs::Twist& twist) {
   if (linear_x != 0.0 && angle_z == 0.0) {
     newMotorL = speedStr;
     newMotorR = speedStr;
-  } else if (angle_z > 0.0) {
+  } else if (angle_z < 0.0) {
     // Turn left
     if (linear_x == 0) {
       newMotorL = revertedSpeedStr;
     }
     newMotorR = speedStr;
-  } else if (angle_z < 0.0) {
+  } else if (angle_z > 0.0) {
     // Turn right
     newMotorL = speedStr;
     if (linear_x == 0) {

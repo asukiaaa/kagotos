@@ -10,13 +10,15 @@ def set_motor_speed(left, right):
     if (left > 0.0 and right > 0.0):
         twist.linear.x = 1.0
     elif (left <= 0.0 and right > 0.0):
+        # Turn left
+        twist.angular.z = 1.0
         if (left == 0.0):
             twist.linear.x = 1.0
-        twist.angular.z = 1.0
     elif (left > 0.0 and right <= 0.0):
+        # Turn right
+        twist.angular.z = -1.0
         if (right == 0.0):
             twist.linear.x = 1.0
-        twist.angular.z = -1.0
     elif (left < 0.0 and right < 0.0):
         twist.linear.x = -1.0
     pub.publish(twist)
