@@ -63,7 +63,9 @@ void messageCb(const geometry_msgs::Twist& twist) {
   updateLastCommunicatedAt();
   const float linear_x = twist.linear.x;
   const float angle_z = twist.angular.z;
-  float speed = linear_x * MOTOR_MAX_VALUE * motor_value_rate;
+  // float speed = linear_x * MOTOR_MAX_VALUE * motor_value_rate;
+  float speed = MOTOR_MAX_VALUE * motor_value_rate;
+  if (linear_x < 0.0) speed *= -1;
   String speedStr = String(speed);
   String revertedSpeedStr = String(-speed);
   String newMotorL = "0";
@@ -73,14 +75,14 @@ void messageCb(const geometry_msgs::Twist& twist) {
     newMotorR = speedStr;
   } else if (angle_z < 0.0) {
     // Turn left
-    if (linear_x == 0) {
+    if (linear_x == 0.0) {
       newMotorL = revertedSpeedStr;
     }
     newMotorR = speedStr;
   } else if (angle_z > 0.0) {
     // Turn right
     newMotorL = speedStr;
-    if (linear_x == 0) {
+    if (linear_x == 0.0) {
       newMotorR = revertedSpeedStr;
     }
   }
