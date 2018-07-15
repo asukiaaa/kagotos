@@ -63,27 +63,42 @@ void messageCb(const geometry_msgs::Twist& twist) {
   updateLastCommunicatedAt();
   const float linear_x = twist.linear.x;
   const float angle_z = twist.angular.z;
-  // float speed = linear_x * MOTOR_MAX_VALUE * motor_value_rate;
   float speed = MOTOR_MAX_VALUE * motor_value_rate;
-  if (linear_x < 0.0) speed *= -1;
-  String speedStr = String(speed);
-  String revertedSpeedStr = String(-speed);
+  String plusSpeedStr = String(speed);
+  String minusSpeedStr = String(-speed);
   String newMotorL = "0";
   String newMotorR = "0";
-  if (linear_x != 0.0 && angle_z == 0.0) {
-    newMotorL = speedStr;
-    newMotorR = speedStr;
+  if (linear_x > 0.0 && angle_z == 0.0) {
+    // Go forward
+    newMotorL = plusSpeedStr;
+    newMotorR = plusSpeedStr;
+  } else if (linear_x < 0.0 && angle_z == 0.0) {
+    // Go back
+    newMotorL = minusSpeedStr;
+    newMotorR = minusSpeedStr;
   } else if (angle_z > 0.0) {
-    // Turn left
     if (linear_x == 0.0) {
-      newMotorL = revertedSpeedStr;
+      // Turn left
+      newMotorL = minusSpeedStr;
+      newMotorR = plusSpeedStr;
+    } else if (linear_x > 0.0) {
+      // Go left forward
+      newMotorR = plusSpeedStr;
+    } else {
+      // Go right back
+      newMotorL = minusSpeedStr;
     }
-    newMotorR = speedStr;
   } else if (angle_z < 0.0) {
-    // Turn right
-    newMotorL = speedStr;
     if (linear_x == 0.0) {
-      newMotorR = revertedSpeedStr;
+      // Turn right
+      newMotorL = plusSpeedStr;
+      newMotorR = minusSpeedStr;
+    } else if (linear_x > 0.0) {
+      // Go right forward
+      newMotorL = plusSpeedStr;
+    } else {
+      // Go left back
+      newMotorR = minusSpeedStr;
     }
   }
   if (currentMotorL == newMotorL && currentMotorR == newMotorR) {
