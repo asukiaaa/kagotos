@@ -54,6 +54,8 @@ Turn right.
 rostopic pub /cmd_vel geometry_msgs/Twist  '{linear:  {x: 1.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: -1.0}}' --once
 ```
 
+Or use [teleop_twist_keyboard](https://github.com/ros-teleop/teleop_twist_keyboard) to publish Twist for cmd_vel.
+
 # Setup memo
 
 ```
