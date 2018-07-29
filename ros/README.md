@@ -1,5 +1,31 @@
 # kagotos/ros
 
+# Create Map
+
+Install [teleop_twist_keyboard](https://github.com/ros-teleop/teleop_twist_keyboard) to publish Twist for cmd_vel.
+
+Terminal 1 for creating map.
+```
+roslaunch kagotos hector_mapping_example.launch
+```
+
+Terminal 2 for subscribing Twist to move kagotos.
+```
+rosrun rosserial_python serial_node.py _port:=/dev/ttyACM0 _baud:=115200
+```
+
+Terminal 3 for publish Twist to move kagotos.
+```
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+```
+
+Terminal 4 for saving map.
+```
+rosrun map_server map_saver -f ./mymap
+```
+
+Reference: [ROS hector_slamを使ってマップを作る。](http://morokyuu.way-nifty.com/blog/2016/01/hector_slam-0a5.html)
+
 # Test commands
 
 ## Test twist message
